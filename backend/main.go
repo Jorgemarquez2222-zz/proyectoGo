@@ -1,13 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+
+	"log"
+	"os"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/joho/godotenv"
 )
+
+type User struct {
+	gorm.Model
+	id              int
+	User            string
+	Pass            string
+	Tipo            string
+	createdAt       time.Time
+	updatedAt       time.Time
+	time_registered time.Time
+}
 
 var (
 	users = []string{"Joe", "Veer", "Zion"}
@@ -63,7 +82,30 @@ func login(c echo.Context) error {
 }
 
 func getUsers(c echo.Context) error {
-	return c.JSON(http.StatusOK, users)
+	//var myEnv map[string]string
+	rr, err := godotenv.Read()
+	fmt.Println(err)
+	fmt.Println(rr)
+	err2 := godotenv.Load()
+	if err2 != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	userDb := os.Getenv("USER_BD")
+	passDb := os.Getenv("PASS_BD")
+	hostDB := os.Getenv("HOST_DDBB")
+	nameDb := os.Getenv("NAME_DDBB")
+
+	fmt.Println(userDb)
+	stringConnectionDDBB := userDb + ":" + passDb + "@(" + hostDB + ")/" + nameDb + "?charset=utf8&parseTime=True&loc=Local"
+	db, _ := gorm.Open(
+		"mysql",
+		stringConnectionDDBB,
+	)
+	user := &User{}
+	db.Table("user").Select("user, pass, tipo").Where("user = ?", "bot02").Scan(&user)
+
+	return c.JSON(http.StatusOK, user)
 }
 
 func main() {
