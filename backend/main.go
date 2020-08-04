@@ -9,12 +9,10 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"log"
 	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/joho/godotenv"
 )
 
 type User struct {
@@ -83,13 +81,6 @@ func login(c echo.Context) error {
 
 func getUsers(c echo.Context) error {
 	//var myEnv map[string]string
-	rr, err := godotenv.Read()
-	fmt.Println(err)
-	fmt.Println(rr)
-	err2 := godotenv.Load()
-	if err2 != nil {
-		log.Fatal("Error loading .env file")
-	}
 
 	userDb := os.Getenv("USER_BD")
 	passDb := os.Getenv("PASS_BD")
