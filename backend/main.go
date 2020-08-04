@@ -93,6 +93,7 @@ func getUsers(c echo.Context) error {
 		"mysql",
 		stringConnectionDDBB,
 	)
+	fmt.Println(db)
 	user := &User{}
 	db.Table("user").Select("user, pass, tipo").Where("user = ?", "bot02").Scan(&user)
 
